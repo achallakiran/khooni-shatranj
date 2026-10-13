@@ -6,22 +6,25 @@ var UI=(function(){
   function show(el,on){el.hidden=!on}
   /* ---------- settings apply ---------- */
   function applySettings(){G.assist=SET.assist;FX.gore=SET.blood;
-    var q=SET.quality;try{engine.setHardwareScalingLevel(FAST?5:(q==='low'?1.6:q==='med'?1.2:1)/(q==='high'?Math.min(window.devicePixelRatio||1,1.5):1))}catch(e){}
-    if(typeof pipe!=='undefined'&&pipe&&!FAST&&!pipe._disposed){try{pipe.bloomEnabled=q!=='low';pipe.chromaticAberrationEnabled=q==='high';pipe.grainEnabled=q==='high';pipe.sharpenEnabled=q!=='low'}catch(e){}}
-    if(typeof vls!=='undefined'&&vls){try{vls.isEnabled=q==='high'}catch(e){}}
-    try{sg.getShadowMap().refreshRate=q==='low'?0:1}catch(e){}
+    if(window.LOOK)LOOK.apply();
     if(AU.setVol)AU.setVol(SET.sfx,SET.voice,SET.music)}
   function syncSettings(){
     $('sZoom').value=Math.round(SET.zoom*100);$('sSens').value=Math.round(SET.sens*100);$('sMusic').value=Math.round(SET.music*100);$('sSfx').value=Math.round(SET.sfx*100);$('sVoice').value=Math.round(SET.voice*100);
     $('sAssist').classList.toggle('on',SET.assist);$('sHints').classList.toggle('on',SET.hints);$('sShake').classList.toggle('on',SET.shake);
-    [].forEach.call($('sBlood').children,function(b){b.classList.toggle('on',b.dataset.v===SET.blood)});[].forEach.call($('sQual').children,function(b){b.classList.toggle('on',b.dataset.v===SET.quality)})}
+    [].forEach.call($('sBlood').children,function(b){b.classList.toggle('on',b.dataset.v===SET.blood)});
+    if(window.LOOK){[].forEach.call($('sStyle').children,function(b){b.classList.toggle('on',b.dataset.s===SET.style)});var st=LOOK.STYLES[SET.style]||LOOK.STYLES.real;$('sStyleLbl').textContent=st.slider;$('sStyleP').value=Math.round(SET.styleP*100);$('lookBtn').textContent=st.n;
+      [].forEach.call($('sTime').children,function(b){b.classList.toggle('on',b.dataset.v===SET.time)});[].forEach.call($('sWeather').children,function(b){b.classList.toggle('on',b.dataset.v===SET.weather)})}[].forEach.call($('sQual').children,function(b){b.classList.toggle('on',b.dataset.v===SET.quality)})}
   function bindSettings(){
     function rng(id,key,k){$(id).addEventListener('input',function(e){SET[key]=+e.target.value/k;saveSet();applySettings()})}
     rng('sZoom','zoom',100);rng('sSens','sens',100);rng('sMusic','music',100);rng('sSfx','sfx',100);rng('sVoice','voice',100);
     function tog(id,key){$(id).addEventListener('click',function(){SET[key]=!SET[key];saveSet();syncSettings();applySettings()})}
     tog('sAssist','assist');tog('sHints','hints');tog('sShake','shake');
     function seg(id,key){[].forEach.call($(id).children,function(b){b.addEventListener('click',function(){SET[key]=b.dataset.v;saveSet();syncSettings();applySettings()})})}
-    seg('sBlood','blood');seg('sQual','quality');
+    seg('sBlood','blood');seg('sQual','quality');seg('sTime','time');
+    [].forEach.call($('sWeather').children,function(b){b.addEventListener('click',function(){SET.weather=b.dataset.v;saveSet();syncSettings();if(window.LOOK)LOOK.setWeather(SET.weather)})});
+    [].forEach.call($('sStyle').children,function(b){b.addEventListener('click',function(){SET.style=b.dataset.s;saveSet();syncSettings();if(window.LOOK)LOOK.setStyle(SET.style)})});
+    $('sStyleP').addEventListener('input',function(e){SET.styleP=+e.target.value/100;saveSet();if(window.LOOK)LOOK.apply()});
+    setInterval(function(){if(!window.LOOK||scr.settings.hidden)return;var L=LOOK.state;$('qread').textContent=(SET.quality==='auto'?'Auto · ':'')+LOOK.TIERS[L.tier].n+(SET.quality==='auto'?' · '+Math.round(L.fps)+' fps':'')},500);
     $('setClose').addEventListener('click',function(){show(scr.settings,false)})}
   /* ---------- how to play ---------- */
   var ill={
@@ -75,10 +78,13 @@ var UI=(function(){
   [].forEach.call($('bmode').children,function(b){b.addEventListener('click',function(){AU.init();setMode(b.dataset.m)})});
   $('gearBtn').addEventListener('click',function(){syncSettings();show(scr.settings,true)});
   $('helpBtn').addEventListener('click',openHow);
+  $('lookBtn').addEventListener('click',function(){syncSettings();show(scr.settings,true);scr.settings.scrollTop=0});
+  function fullscreen(){var d=document.documentElement;try{var r=(d.requestFullscreen||d.webkitRequestFullscreen).call(d);if(r&&r.then)r.then(function(){try{screen.orientation.lock('landscape').catch(function(){})}catch(e){}}).catch(function(){})}catch(e){}}
+  $('fsBtn').addEventListener('click',fullscreen);$('pFs').addEventListener('click',fullscreen);
   $('go').addEventListener('click',function(){AU.init();if(!SET.seenHowto){UI._afterHow=startFight;openHow();return}startFight()});
   function startFight(){show(scr.home,false);show(scr.settings,false);beginFight()}
   /* ---------- fight / pause / result ---------- */
-  function onFight(){show(scr.title,false);show(scr.home,false);show(scr.hud,true);show(scr.end,false);show(scr.pause,false);show(scr.touch,TOUCHDEV);setName();if(AU.music)AU.music.set(G.battle?0:1)}
+  function onFight(){if(window.LOOK&&SET.weather==='random')LOOK.setWeather('random');show(scr.title,false);show(scr.home,false);show(scr.hud,true);show(scr.end,false);show(scr.pause,false);show(scr.touch,TOUCHDEV);setName();if(AU.music)AU.music.set(G.battle?0:1)}
   function setName(){var p=G.player;if(!p)return;var C=CLS[p.kindId];$('pname').textContent=C.name+(C.tech?' · '+TECHNAME[C.tech]:'')}
   function onTakeover(f){setName()}
   function togglePause(force){if(G.mode!=='fight')return;G.paused=force!==undefined?force:!G.paused;show(scr.pause,G.paused);if(!G.paused){show(scr.settings,false);show(scr.howto,false)}
@@ -102,3 +108,8 @@ var UI=(function(){
   var api={onPiece:onPiece,onArmy:onArmy,onMode:onMode,onFight:onFight,onTakeover:onTakeover,showResult:showResult,togglePause:togglePause,syncSettings:syncSettings,step:step,frame:frame,goHome:goHome,applySettings:applySettings};
   setTimeout(function(){G.army='sun';G.bmode='battle';G.piece='sipahi';buildTitle()},0);
   return api})();
+/* ---------- installable app + offline play (GitHub Pages only; inert inside the Claude page) ---------- */
+(function(){if(!/github\.io$/.test(location.hostname))return;
+  try{var l=document.createElement('link');l.rel='manifest';l.href='manifest.webmanifest';document.head.appendChild(l);var t=document.createElement('meta');t.name='theme-color';t.content='#0b0806';document.head.appendChild(t);
+    var ic=document.createElement('link');ic.rel='apple-touch-icon';ic.href='icons/icon-192.png';document.head.appendChild(ic)}catch(e){}
+  if('serviceWorker' in navigator)window.addEventListener('load',function(){navigator.serviceWorker.register('sw.js').catch(function(){})})})();

@@ -1,5 +1,5 @@
 /* =====================================================================
-   Blood & Bronze — Khooni Shatranj v2: open field, zoom, takeover, stomp, blood, sound
+   Blood & Bronze — Khooni Shatranj v3: visual styles, weather, time of day, sharper picture
    Deterministic 60 Hz simulation: states, move data, parry → counter,
    posture on both sides, anti-mash AI defence, attack director.
    ===================================================================== */
@@ -157,8 +157,8 @@ var RJ={
   shove:{w:15,glint:'white',wind:.55,active:.1,rec:.45,dmg:6,post:35,reach:1.9,arc:90,lunge:.7,poses:['bashW','bashM','bashM']}};
 function basicMove(e){var m=e.moves;return m.thrust||m.slash||m.cross||m.swing||m.tusk}
 /* ================= state ================= */
-var SET=(function(){var touch=!!(window.matchMedia&&matchMedia('(pointer:coarse)').matches);var d={zoom:.5,sens:1,assist:touch,hints:true,shake:true,music:.55,sfx:.9,voice:.8,blood:'full',quality:touch?'med':'high',seenHowto:false};
-  try{var raw=localStorage.getItem('ks_settings');if(raw){var o=JSON.parse(raw);for(var k in o)if(k in d)d[k]=o[k]}}catch(e){}return d})();
+var SET=(function(){var touch=!!(window.matchMedia&&matchMedia('(pointer:coarse)').matches);var d={zoom:.5,sens:1,assist:touch,hints:true,shake:true,music:.55,sfx:.9,voice:.8,blood:'full',quality:'auto',style:'real',styleP:.5,time:'dusk',weather:'clear',seenHowto:false};
+  try{var raw=localStorage.getItem('ks_settings');if(raw){var o=JSON.parse(raw);for(var k in o)if(k in d)d[k]=o[k]}}catch(e){}if(['auto','high','normal','lite','min'].indexOf(d.quality)<0)d.quality=d.quality==='low'?'lite':'auto';return d})();
 function saveSet(){try{localStorage.setItem('ks_settings',JSON.stringify(SET))}catch(e){}}
 var ST={};function stat(k,n){ST[k]=(ST[k]||0)+(n||1)}
 var G={army:'sun',piece:'sipahi',bmode:'battle',events:[],combo:0,bestCombo:0,comboT:0,mode:'menu',t:0,real:0,stop:0,slowK:1,slowUntil:0,fighters:[],player:null,round:0,kills:0,sel:'spartan',shake:0,breathUntil:0,hits:[],seed:777,menuF:null,
@@ -671,7 +671,7 @@ function updateCamera(rdt){var p=G.player;
   else{G.cine=null;
     if(G.real-G.lastCamInput>1.6&&p.speed>3){G.yaw=angLerp(G.yaw,p.face,rdt*1.1)}
     var near=foes(p).filter(function(e){return dist(p,e)<7});var Z=SET.zoom;dR=lerp(clamp(5.2+near.length*.5,5.2,7.6),18,Z);
-    focus=p.pos.clone();if(p.lockT&&alive(p.lockT)){focus=V3.Lerp(p.pos,p.lockT.pos,.32)}var ry=G.yaw+Math.PI/2;focus.x+=Math.sin(ry)*.55;focus.z+=Math.cos(ry)*.55;focus.y=1.45+(p.hOff||0)*.75+Z*.6;dyaw=G.yaw;dpitch=clamp(G.pitch-Z*.42,.62,1.5);if(p.mount)dR+=p.mount.type==='gaja'?2.6:1.2}
+    focus=p.pos.clone();if(p.lockT&&alive(p.lockT)){focus=V3.Lerp(p.pos,p.lockT.pos,.32)}var ry=G.yaw+Math.PI/2;focus.x+=Math.sin(ry)*.55;focus.z+=Math.cos(ry)*.55;focus.y=1.45+(p.hOff||0)*.75+Z*.6;dyaw=G.yaw;dpitch=clamp(G.pitch-Z*.42-(window.LOOKPITCH||0),.55,1.5);if(p.mount)dR+=p.mount.type==='gaja'?2.6:1.2}
   var k=1-Math.exp(-(G.cine?5:7)*rdt);
   G.camYaw=G.camYaw===undefined?dyaw:angLerp(G.camYaw,dyaw,G.cine?1-Math.exp(-4*rdt):1-Math.exp(-12*rdt));G.camPitch=G.camPitch===undefined?dpitch:lerp(G.camPitch,dpitch,k);
   G.camR=lerp(G.camR,dR,1-Math.exp(-(G.cine?4:2.5)*rdt));G.camT=V3.Lerp(G.camT,focus,k);

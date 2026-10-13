@@ -98,3 +98,11 @@
     else if(k==='win'){[1,1.5,2,3].forEach(function(r,i){horn(t+i*.08,98*r,2.4,.06)});drum(t,40,1.5,.7,0)}
     else if(k==='lose'){horn(t,73,2.6,.08);horn(t,87,2.6,.05)}};
 })();
+/* ---------- v3: rain and thunder ---------- */
+(function(){var rainG=null,want=0;
+  AU.rain=function(level){want=level||0;if(!AU.ctx)return;var c=AU.ctx;
+    if(!rainG){var s=c.createBufferSource();s.buffer=AU.nb;s.loop=true;var hp=c.createBiquadFilter();hp.type='highpass';hp.frequency.value=900;var lp=c.createBiquadFilter();lp.type='lowpass';lp.frequency.value=6000;rainG=c.createGain();rainG.gain.value=0;s.connect(hp);hp.connect(lp);lp.connect(rainG);rainG.connect(AU.master);s.start()}
+    rainG.gain.setTargetAtTime(.07*want,c.currentTime,.8)};
+  var baseInit2=AU.init;AU.init=function(){var had=!!AU.ctx;baseInit2();if(!had&&AU.ctx&&want)AU.rain(want)};
+  AU.thunder=function(){if(!AU.ctx)return;var c=AU.ctx,t=c.currentTime;var s=c.createBufferSource();s.buffer=AU.nb;var lp=c.createBiquadFilter();lp.type='lowpass';lp.frequency.setValueAtTime(400,t);lp.frequency.exponentialRampToValueAtTime(70,t+2.6);
+    var g=c.createGain();g.gain.setValueAtTime(0,t);g.gain.linearRampToValueAtTime(.9,t+.05);g.gain.exponentialRampToValueAtTime(.001,t+2.8);s.connect(lp);lp.connect(g);g.connect(AU.master);s.start(t,Math.random()*.5);s.stop(t+2.9)}})();

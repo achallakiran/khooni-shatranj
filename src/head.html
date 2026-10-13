@@ -60,6 +60,20 @@ input[type=range]::-moz-range-thumb{width:20px;height:20px;background:var(--gold
 .tog{pointer-events:auto;width:52px;height:28px;border:1px solid var(--line);background:#000a;position:relative;cursor:pointer;flex:none}
 .tog::after{content:"";position:absolute;top:4px;left:4px;width:18px;height:18px;background:var(--dim);transition:left .15s,background .15s}
 .tog.on{background:#d9a44133}.tog.on::after{left:28px;background:var(--gold2)}
+/* look swatches */
+.sw{display:grid;grid-template-columns:repeat(auto-fill,minmax(86px,1fr));gap:8px;margin:6px 0 4px}
+.sw button{pointer-events:auto;height:64px;border:1px solid var(--line);cursor:pointer;position:relative;color:#fff;font-family:Cinzel,serif;font-size:9.5px;letter-spacing:.1em;text-transform:uppercase;display:flex;align-items:flex-end;justify-content:center;padding:0 2px 5px;text-shadow:0 1px 3px #000}
+.sw button.on{outline:2px solid var(--gold2);outline-offset:1px}
+.sw [data-s=real]{background:linear-gradient(160deg,#3a2414,#b07a44 55%,#e8c890)}
+.sw [data-s=painted]{background:radial-gradient(circle at 30% 30%,#e7c79b,#c48a5a 45%,#7a3a2a 80%),#e7d6b5}
+.sw [data-s=comic]{background:linear-gradient(135deg,#f2c14e 0 40%,#c0392b 40% 70%,#1d1d1d 70%);box-shadow:inset 0 0 0 3px #111}
+.sw [data-s=toy]{background:repeating-conic-gradient(#d8bf94 0 25%,#7a5a3a 0 50%) 0 0/20px 20px;filter:blur(.4px) saturate(1.3)}
+.sw [data-s=night]{background:radial-gradient(circle at 70% 25%,#f8d27a 0 6%,transparent 7%),linear-gradient(#070b1c,#232a40 70%,#120f12)}
+.sw [data-s=shadow]{background:linear-gradient(#fffaf0,#d8d1c4);color:#111;text-shadow:none}
+.sw [data-s=shadow]::before{content:"";position:absolute;left:30%;bottom:18px;width:12px;height:26px;background:#111;border-radius:6px 6px 0 0;box-shadow:24px 4px 0 -2px #111}
+.sw [data-s=retro]{background:conic-gradient(#b07a44 0 25%,#3a2414 0 50%,#e8c890 0 75%,#7a5a3a 0) 0 0/16px 16px}
+.qread{font-family:Cinzel,serif;font-size:10px;letter-spacing:.12em;color:var(--dim);margin-top:4px;text-align:right}
+#lookBtn{pointer-events:auto;min-height:48px;padding:0 12px;border:1px solid var(--line);background:var(--panel);color:var(--dim);font-family:Cinzel,serif;font-size:10.5px;letter-spacing:.12em;text-transform:uppercase;cursor:pointer}
 /* how to play */
 .card{display:grid;grid-template-columns:120px 1fr;gap:16px;align-items:center;min-height:150px}
 .card svg{width:120px;height:120px}
@@ -153,6 +167,8 @@ input[type=range]::-moz-range-thumb{width:20px;height:20px;background:var(--gold
       <div class="seg" id="army"><button data-a="sun">Sun</button><button data-a="ecl">Eclipse</button></div>
     </div>
     <div class="grp">
+      <button id="lookBtn">Realistic</button>
+      <button class="icon" id="fsBtn" aria-label="Fullscreen"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M4 9V4h5M20 9V4h-5M4 15v5h5M20 15v5h-5"/></svg></button>
       <button class="icon" id="helpBtn" aria-label="How to play"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M9 9a3 3 0 1 1 4 2.8c-.8.3-1 1-1 1.7V15"/><circle cx="12" cy="18.5" r=".6" fill="currentColor"/></svg></button>
       <button class="icon" id="gearBtn" aria-label="Settings"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="3"/><path d="M12 2v3M12 19v3M2 12h3M19 12h3M4.9 4.9l2.1 2.1M17 17l2.1 2.1M4.9 19.1 7 17M17 7l2.1-2.1"/></svg></button>
     </div>
@@ -175,6 +191,11 @@ input[type=range]::-moz-range-thumb{width:20px;height:20px;background:var(--gold
 
 <section id="settings" class="sheet" hidden>
   <header><h3 class="cz">Settings</h3><button class="icon" id="setClose" aria-label="Close"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M6 6l12 12M18 6 6 18"/></svg></button></header>
+  <h4 class="cz">Look</h4>
+  <div class="sw" id="sStyle"><button data-s="real">Realistic</button><button data-s="painted">Painted</button><button data-s="comic">Comic</button><button data-s="toy">Toy board</button><button data-s="night">Night battle</button><button data-s="shadow">Shadow war</button><button data-s="retro">Retro pixel</button></div>
+  <div class="row"><label id="sStyleLbl">Contrast</label><input type="range" id="sStyleP" min="0" max="100"></div>
+  <div class="row"><label>Time of day</label><div class="seg" id="sTime"><button data-v="dawn">Dawn</button><button data-v="day">Day</button><button data-v="dusk">Dusk</button><button data-v="night">Night</button></div></div>
+  <div class="row"><label>Weather</label><div class="seg" id="sWeather"><button data-v="clear">Clear</button><button data-v="rain">Rain</button><button data-v="snow">Snow</button><button data-v="storm">Storm</button><button data-v="random">Random</button></div></div>
   <h4 class="cz">Gameplay</h4>
   <div class="row"><label>Camera zoom<small>Close duel to commander view · pinch or wheel in battle</small></label><input type="range" id="sZoom" min="0" max="100"></div>
   <div class="row"><label>Camera sensitivity</label><input type="range" id="sSens" min="30" max="200"></div>
@@ -187,7 +208,7 @@ input[type=range]::-moz-range-thumb{width:20px;height:20px;background:var(--gold
   <div class="row"><label>Voices</label><input type="range" id="sVoice" min="0" max="100"></div>
   <h4 class="cz">Video</h4>
   <div class="row"><label>Blood</label><div class="seg" id="sBlood"><button data-v="off">Off</button><button data-v="low">Low</button><button data-v="full">Full</button></div></div>
-  <div class="row"><label>Quality<small>Shadows, effects, distant detail</small></label><div class="seg" id="sQual"><button data-v="low">Low</button><button data-v="med">Medium</button><button data-v="high">High</button></div></div>
+  <div class="row"><label>Quality<small>Shadows, effects, distant detail</small></label><div><div class="seg" id="sQual"><button data-v="auto">Auto</button><button data-v="high">High</button><button data-v="normal">Normal</button><button data-v="lite">Lite</button><button data-v="min">Min</button></div><div class="qread" id="qread"></div></div></div>
 </section>
 
 <section id="howto" class="sheet" hidden>
@@ -201,6 +222,7 @@ input[type=range]::-moz-range-thumb{width:20px;height:20px;background:var(--gold
     <button class="btn main" id="pResume">Resume</button>
     <button class="btn" id="pSet">Settings</button>
     <button class="btn" id="pHow">How to play</button>
+    <button class="btn" id="pFs">Fullscreen</button>
     <button class="btn" id="pQuit">Quit to home</button></div>
 </section>
 
