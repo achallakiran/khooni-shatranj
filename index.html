@@ -1188,8 +1188,8 @@ var RJ={
   shove:{w:15,glint:'white',wind:.55,active:.1,rec:.45,dmg:6,post:35,reach:1.9,arc:90,lunge:.7,poses:['bashW','bashM','bashM']}};
 function basicMove(e){var m=e.moves;return m.thrust||m.slash||m.cross||m.swing||m.tusk}
 /* ================= state ================= */
-var SET=(function(){var touch=!!(window.matchMedia&&matchMedia('(pointer:coarse)').matches);var d={zoom:.5,sens:1,assist:touch,hints:true,shake:true,music:.55,sfx:.9,voice:.8,blood:'full',quality:'auto',style:'real',styleP:.5,time:'dusk',weather:'clear',seenHowto:false};
-  try{var raw=localStorage.getItem('ks_settings');if(raw){var o=JSON.parse(raw);for(var k in o)if(k in d)d[k]=o[k]}}catch(e){}if(['auto','high','normal','lite','min'].indexOf(d.quality)<0)d.quality=d.quality==='low'?'lite':'auto';return d})();
+var SET=(function(){var touch=!!(window.matchMedia&&matchMedia('(pointer:coarse)').matches);var d={zoom:.5,sens:1,assist:touch,hints:true,shake:true,music:.55,sfx:.9,voice:.8,blood:'full',quality:'high',qv:2,style:'real',styleP:.5,time:'dusk',weather:'clear',seenHowto:false};
+  var o=null;try{var raw=localStorage.getItem('ks_settings');if(raw){o=JSON.parse(raw);for(var k in o)if(k in d)d[k]=o[k]}}catch(e){}if(['auto','high','normal','lite','min'].indexOf(d.quality)<0)d.quality=d.quality==='low'?'lite':'high';if(!o||o.qv!==2){d.quality='high';d.qv=2}return d})();
 function saveSet(){try{localStorage.setItem('ks_settings',JSON.stringify(SET))}catch(e){}}
 var ST={};function stat(k,n){ST[k]=(ST[k]||0)+(n||1)}
 var G={army:'sun',piece:'sipahi',bmode:'battle',events:[],combo:0,bestCombo:0,comboT:0,mode:'menu',t:0,real:0,stop:0,slowK:1,slowUntil:0,fighters:[],player:null,round:0,kills:0,sel:'spartan',shake:0,breathUntil:0,hits:[],seed:777,menuF:null,

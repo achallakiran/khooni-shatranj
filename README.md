@@ -34,7 +34,7 @@ Everything is plain JavaScript on [Babylon.js](https://www.babylonjs.com/); mode
 ## Looks (Settings, Look)
 Seven visual styles, each with its own slider: **Realistic**, **Painted** (miniature-painting brushwork), **Comic** (cel shading with ink outlines), **Toy board** (tilt-shift miniature), **Night battle**, **Shadow war** (silhouettes in mist, army-coloured rims) and **Retro pixel**. Time of day (Dawn, Day, Dusk, Night) and weather (Clear, Rain, Snow, Storm, Random) combine with any style. Combat signals (warning glints, counter ring, danger zones) are drawn on top of every style, so they always read the same.
 
-Quality: **Auto** (default) watches the frame rate and steps between High, Normal, Lite and Minimal; or lock a tier.
+Quality: **High** by default; pick Normal, Lite or Minimal for slower phones, or **Auto** to step between them by frame rate.
 
 Other settings: camera zoom, assist, blood level (Off / Low / Full), and music, effects and voice volumes. On a phone, add the page to your home screen to play it fullscreen and offline.
 
